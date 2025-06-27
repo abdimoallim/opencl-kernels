@@ -415,6 +415,13 @@ class TestBLAS(unittest.TestCase):
     self.assertEqual(param[0], 0.0)
     self.assertAlmostEqual(result_x1, x1, places=5)
 
+  def test_sgemv_basic(self):
+    A = np.array([[1,2],[3,4],[5,6]], dtype=np.float32)
+    x = np.array([1,1], dtype=np.float32)
+    y = np.array([1,1,1], dtype=np.float32)
+    expected = np.array([4,8,12], dtype=np.float32)
+    result = self.blas.sgemv(1.0, A, x, y)
+    np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
 if __name__ == "__main__":
   unittest.main()

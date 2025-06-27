@@ -493,3 +493,46 @@ class BLAS:
     self.queue.finish()
 
     return (new_d1[0], new_d2[0], new_x1[0], param)
+
+  def sgemv(self, alpha, A, x, y, m=None, n=None, lda=None, incx=1, incy=1, beta=1.0):
+    m = A.shape[0] if m is None else m
+    n = A.shape[1] if n is None else n
+    lda = m if lda is None else lda
+
+    # Fortran array for column-major order in A
+    A = np.asfortranarray(A.astype(np.float32))
+    x = np.ascontiguousarray(x.astype(np.float32))
+    y = np.ascontiguousarray(y.astype(np.float32))
+
+    A_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
+    )
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+
+    program = cl.Program(self.context, sgemv_kernel()).build()  # noqa: F405
+    program.sgemv(
+      self.queue,
+      (m,),
+      None,
+      np.int32(m),
+      np.int32(n),
+      np.float32(alpha),
+      A_buf,
+      np.int32(lda),
+      x_buf,
+      np.int32(incx),
+      np.float32(beta),
+      y_buf,
+      np.int32(incy),
+    )
+
+    cl.enqueue_copy(self.queue, y, y_buf)
+
+    self.queue.finish()
+
+    return y
