@@ -264,3 +264,63 @@ class BLAS:
     self.queue.finish()
 
     return np.sqrt(result[0])
+
+  def sasum(self, x, n=None, incx=1):
+    if n is None:
+      n = len(x)
+
+    if n == 0:
+      return 0.0
+
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+
+    max_wg_size = 256
+    global_size = min(1024, ((n + 63) // 64) * 64)
+
+    partial_sums_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE, size=global_size * 4
+    )
+    result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=4)
+
+    zero = np.zeros(global_size, dtype=np.float32)
+    cl.enqueue_copy(self.queue, partial_sums_buf, zero)
+
+    program = self._load_kernel("sasum")
+
+    kernel_partial = program.sasum_partial
+    kernel_partial(
+      self.queue,
+      (global_size,),
+      None,
+      np.int32(n),
+      x_buf,
+      np.int32(incx),
+      partial_sums_buf,
+    )
+
+    local_size = min(max_wg_size, global_size)
+    kernel_reduce = program.sasum_reduce
+    kernel_reduce(
+      self.queue,
+      (global_size,),
+      (local_size,),
+      partial_sums_buf,
+      result_buf,
+      cl.LocalMemory(local_size * 4),
+    )
+
+    if global_size > local_size:
+      partial_results = np.zeros(global_size, dtype=np.float32)
+      cl.enqueue_copy(self.queue, partial_results, partial_sums_buf)
+      final_result = np.sum(partial_results)
+    else:
+      final_result = np.zeros(1, dtype=np.float32)
+      cl.enqueue_copy(self.queue, final_result, result_buf)
+      final_result = final_result[0]
+
+    self.queue.finish()
+
+    return float(final_result)
