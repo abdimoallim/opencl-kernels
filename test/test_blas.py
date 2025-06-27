@@ -416,28 +416,45 @@ class TestBLAS(unittest.TestCase):
     self.assertAlmostEqual(result_x1, x1, places=5)
 
   def test_sgemv_basic(self):
-    A = np.array([[1,2],[3,4],[5,6]], dtype=np.float32)
-    x = np.array([1,1], dtype=np.float32)
-    y = np.array([1,1,1], dtype=np.float32)
-    expected = np.array([4,8,12], dtype=np.float32)
+    A = np.array([[1, 2], [3, 4], [5, 6]], dtype=np.float32)
+    x = np.array([1, 1], dtype=np.float32)
+    y = np.array([1, 1, 1], dtype=np.float32)
+    expected = np.array([4, 8, 12], dtype=np.float32)
     result = self.blas.sgemv(1.0, A, x, y)
     np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
   def test_sger_basic(self):
-    x = np.array([1,2], dtype=np.float32)
-    y = np.array([3,4], dtype=np.float32)
-    A = np.zeros((2,2), dtype=np.float32)
-    expected = np.array([[3,4],[6,8]], dtype=np.float32)
+    x = np.array([1, 2], dtype=np.float32)
+    y = np.array([3, 4], dtype=np.float32)
+    A = np.zeros((2, 2), dtype=np.float32)
+    expected = np.array([[3, 4], [6, 8]], dtype=np.float32)
     result = self.blas.sger(1.0, x, y, A)
     np.testing.assert_array_almost_equal(result, expected)
 
   def test_ssymv_basic(self):
-    A = np.array([[1,2],[2,3]], dtype=np.float32)
-    x = np.array([1,1], dtype=np.float32)
-    y = np.array([1,1], dtype=np.float32)
-    expected = np.array([4,6], dtype=np.float32)
+    A = np.array([[1, 2], [2, 3]], dtype=np.float32)
+    x = np.array([1, 1], dtype=np.float32)
+    y = np.array([1, 1], dtype=np.float32)
+    expected = np.array([4, 6], dtype=np.float32)
     result = self.blas.ssymv(1.0, A, x, y)
     np.testing.assert_array_almost_equal(result, expected)
+
+  def test_sgbmv_basic(self):
+    # band matrix storage for 3x3 matrix with kl=1, ku=1
+    A = np.array(
+      [
+        [0, 2, 4],  # superdiagonal
+        [1, 3, 8],  # main diagonal
+        [6, 7, 0],  # subdiagonal
+      ],
+      dtype=np.float32,
+    )
+    x = np.array([1, 1, 1], dtype=np.float32)
+    y = np.array([1, 1, 1], dtype=np.float32)
+    expected = np.array([4, 14, 16], dtype=np.float32)
+    result = self.blas.sgbmv(1.0, A, x, y, kl=1, ku=1)
+    np.testing.assert_array_almost_equal(result, expected, decimal=5)
+
 
 if __name__ == "__main__":
   unittest.main()

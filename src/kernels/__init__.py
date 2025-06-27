@@ -3,6 +3,7 @@
 
 from .ssymv import ssymv_kernel
 from .sgemv import sgemv_kernel
+from .sgbmv import sgbmv_kernel
 from .sger import sger_kernel
 from .srotg import srotg_kernel
 from .scopy import scopy_kernel
@@ -20,6 +21,7 @@ from .sdot import sdot_kernel
 __all__ = [
     'ssymv_kernel',
     'sgemv_kernel',
+    'sgbmv_kernel',
     'sger_kernel',
     'srotg_kernel',
     'scopy_kernel',
