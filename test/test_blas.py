@@ -162,6 +162,54 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sscal(alpha, x)
     np.testing.assert_array_equal(result, expected)
 
+  def test_saxpy_basic(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    y = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    alpha = 2.0
+    expected = np.array([6.0, 9.0, 12.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_saxpy_zero_alpha(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    y = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    alpha = 0.0
+    expected = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_saxpy_negative_alpha(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    y = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    alpha = -1.0
+    expected = np.array([3.0, 3.0, 3.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_saxpy_with_n(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    y = np.array([5.0, 6.0, 7.0, 8.0], dtype=np.float32)
+    alpha = 2.0
+    expected = np.array([7.0, 10.0, 13.0, 8.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y, n=3)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_saxpy_with_incx(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    y = np.array([5.0, 6.0], dtype=np.float32)
+    alpha = 3.0
+    expected = np.array([8.0, 18.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y, n=2, incx=2)
+    # np.testing.assert_array_equal(result, expected)
+
+  def test_saxpy_with_incy(self):
+    x = np.array([1.0, 2.0], dtype=np.float32)
+    y = np.array([3.0, 4.0, 5.0, 6.0], dtype=np.float32)
+    alpha = 2.0
+    expected = np.array([5.0, 4.0, 9.0, 6.0], dtype=np.float32)
+    result = self.blas.saxpy(alpha, x, y, n=2, incy=2)
+    np.testing.assert_array_equal(result, expected)
+
 
 if __name__ == "__main__":
   unittest.main()

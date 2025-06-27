@@ -123,3 +123,39 @@ class BLAS:
     self.queue.finish()
 
     return x
+
+  def saxpy(self, alpha, x, y, n=None, incx=1, incy=1):
+    if n is None:
+      n = len(x)
+
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    y = np.ascontiguousarray(y, dtype=np.float32)
+
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+
+    program = self._load_kernel("saxpy")
+    kernel = program.saxpy
+
+    global_size = (n,)
+
+    kernel(
+      self.queue,
+      global_size,
+      None,
+      np.int32(n),
+      np.float32(alpha),
+      x_buf,
+      np.int32(incx),
+      y_buf,
+      np.int32(incy),
+    )
+
+    cl.enqueue_copy(self.queue, y, y_buf)
+    self.queue.finish()
+
+    return y
