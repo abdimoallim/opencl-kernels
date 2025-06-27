@@ -423,5 +423,13 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sgemv(1.0, A, x, y)
     np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
+  def test_sger_basic(self):
+    x = np.array([1,2], dtype=np.float32)
+    y = np.array([3,4], dtype=np.float32)
+    A = np.zeros((2,2), dtype=np.float32)
+    expected = np.array([[3,4],[6,8]], dtype=np.float32)
+    result = self.blas.sger(1.0, x, y, A)
+    np.testing.assert_array_almost_equal(result, expected)
+
 if __name__ == "__main__":
   unittest.main()

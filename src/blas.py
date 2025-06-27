@@ -536,3 +536,40 @@ class BLAS:
     self.queue.finish()
 
     return y
+
+  def sger(self, alpha, x, y, A, m=None, n=None, incx=1, incy=1, lda=None):
+    m = x.size if m is None else m
+    n = y.size if n is None else n
+    lda = m if lda is None else lda
+
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+    A_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
+    )
+
+    program = cl.Program(self.context, sger_kernel()).build()  # noqa: F405
+    program.sger(
+      self.queue,
+      (m, n),
+      None,
+      np.int32(m),
+      np.int32(n),
+      np.float32(alpha),
+      x_buf,
+      np.int32(incx),
+      y_buf,
+      np.int32(incy),
+      A_buf,
+      np.int32(lda),
+    )
+
+    cl.enqueue_copy(self.queue, A, A_buf)
+
+    self.queue.finish()
+
+    return A

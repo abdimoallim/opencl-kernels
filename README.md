@@ -22,7 +22,7 @@ OpenCL implementation of various kernels—BLAS specification & LAPACK routines.
 #### BLAS Level 2 (matrix-vector operations)
 
 - [ ] `?gemv` - general matrix-vector multiply: $y = \alpha \cdot A \cdot x + \beta \cdot y$ ([`sgemv`](/src/blas/L2/sgemv.cl))
-- [ ] `?ger` - general rank-1 update: $A = \alpha \cdot x \cdot y^T + A$ (real)
+- [ ] `?ger` - general rank-1 update: $A = \alpha \cdot x \cdot y^T + A$ (real) ([`sger`](/src/blas/L2/sger.cl))
 - [ ] `?geru` - general rank-1 update unconjugated (complex)
 - [ ] `?gerc` - general rank-1 update conjugated (complex)
 - [ ] `?gbmv` - general band matrix-vector multiply
