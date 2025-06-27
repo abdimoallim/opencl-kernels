@@ -655,3 +655,47 @@ class BLAS:
     self.queue.finish()
 
     return y
+
+  def ssbmv(
+    self, alpha, A, x, y, k, uplo="U", n=None, lda=None, incx=1, incy=1, beta=1.0
+  ):
+    n = len(x) if n is None else n
+    lda = k + 1 if lda is None else lda
+
+    A = np.asfortranarray(A, dtype=np.float32)
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    y = np.ascontiguousarray(y, dtype=np.float32)
+
+    A_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
+    )
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+
+    program = cl.Program(self.context, ssbmv_kernel()).build()  # noqa: F405
+    program.ssbmv(
+      self.queue,
+      (n,),
+      None,
+      np.int32(n),
+      np.int32(k),
+      np.float32(alpha),
+      A_buf,
+      np.int32(lda),
+      x_buf,
+      np.int32(incx),
+      np.float32(beta),
+      y_buf,
+      np.int32(incy),
+      np.int32(1 if uplo == "U" else 0),
+    )
+
+    cl.enqueue_copy(self.queue, y, y_buf)
+
+    self.queue.finish()
+
+    return y

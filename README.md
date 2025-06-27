@@ -26,7 +26,7 @@ OpenCL implementation of various kernels—BLAS specification & LAPACK routines.
 - [ ] `?geru` - general rank-1 update unconjugated (complex)
 - [ ] `?gerc` - general rank-1 update conjugated (complex)
 - [ ] `?gbmv` - general band matrix-vector multiply ([`sgbmv`](/src/blas/L2/sgbmv.cl))
-- [ ] `?sbmv` - symmetric band matrix-vector multiply
+- [ ] `?sbmv` - symmetric band matrix-vector multiply ([`ssbmv`](/src/blas/L2/ssbmv.cl))
 - [ ] `?hbmv` - Hermitian band matrix-vector multiply (complex)
 - [ ] `?tbmv` - triangular band matrix-vector multiply
 - [ ] `?tbsv` - triangular band system solve

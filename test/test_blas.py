@@ -455,6 +455,28 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sgbmv(1.0, A, x, y, kl=1, ku=1)
     np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
+  def test_ssbmv_basic(self):
+    # upper triangular band matrix (k=1)
+    # full matrix       packed storage
+    # [1 2 0]           [0 2 4]  (first superdiagonal)
+    # [2 3 4]           [1 3 5]  (main diagonal)
+    # [0 4 5]
+    A = np.array(
+      [
+        [0, 2, 4],  # sd
+        [1, 3, 5],  # d
+      ],
+      dtype=np.float32,
+    )
+    x = np.array([1, 1, 1], dtype=np.float32)
+    y = np.array([1, 1, 1], dtype=np.float32)
+    # y[0] = 1*1 + 2*1 + 1 = 4
+    # y[1] = 2*1 + 3*1 + 4*1 + 1 = 10
+    # y[2] = 4*1 + 5*1 + 1 = 10
+    expected = np.array([4, 10, 10], dtype=np.float32)
+    result = self.blas.ssbmv(1.0, A, x, y, k=1, uplo="U")
+    np.testing.assert_array_almost_equal(result, expected, decimal=5)
+
 
 if __name__ == "__main__":
   unittest.main()
