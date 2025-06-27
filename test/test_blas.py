@@ -313,6 +313,17 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sasum(x, n=3)
     np.testing.assert_almost_equal(result, expected)
 
+  def test_isamax_basic(self):
+    x = np.array([1.0, 3.0, 2.0], dtype=np.float32)
+    expected = 1
+    result = self.blas.isamax(x)
+    self.assertEqual(result, expected)
+
+  def test_isamax_with_n(self):
+    x = np.array([1.0, 4.0, 3.0, 2.0], dtype=np.float32)
+    expected = 1
+    result = self.blas.isamax(x, n=2)
+    self.assertEqual(result, expected)
 
 if __name__ == "__main__":
   unittest.main()

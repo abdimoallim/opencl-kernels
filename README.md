@@ -6,14 +6,14 @@ OpenCL implementation of various kernels—BLAS specification & LAPACK routines.
 
 - [ ] `?copy` - copy vector x to vector y ([`scopy`](/src/blas/L1/scopy.cl))
 - [ ] `?swap` - swap vectors x and y ([`sswap`](/src/blas/L1/sswap.cl))
-- [ ] `?scal` - scale vector by scalar: $x = \alpha \cdot x$ [`sscal`](/src/blas/L1/sscal.cl)
-- [ ] `?axpy` - vector plus scaled vector: $y = \alpha \cdot x + y$ [`saxpy`](/src/blas/L1/saxpy.cl)
-- [ ] `?dot` - dot product (real types only) [`sdot`](/src/blas/L1/sdot.cl)
+- [ ] `?scal` - scale vector by scalar: $x = \alpha \cdot x$ ([`sscal`](/src/blas/L1/sscal.cl))
+- [ ] `?axpy` - vector plus scaled vector: $y = \alpha \cdot x + y$ ([`saxpy`](/src/blas/L1/saxpy.cl))
+- [ ] `?dot` - dot product (real types only) ([`sdot`](/src/blas/L1/sdot.cl))
 - [ ] `?dotc` - conjugate dot product (complex types only)
 - [ ] `?dotu` - unconjugated dot product (complex types only)
-- [ ] `?nrm2` - Euclidean norm [`snrm2`](/src/blas/L1/snrm2.cl)
-- [ ] `?asum` - sum of absolute values [`sasum`](/src/blas/L1/sasum.cl)
-- [ ] `i?amax` - index of maximum absolute value element
+- [ ] `?nrm2` - Euclidean norm ([`snrm2`](/src/blas/L1/snrm2.cl))
+- [ ] `?asum` - sum of absolute values ([`sasum`](/src/blas/L1/sasum.cl))
+- [ ] `i?amax` - index of maximum absolute value element ([`isamax`](/src/blas/L1/isamax.cl))
 - [ ] `?rot` - apply plane rotation
 - [ ] `?rotg` - generate plane rotation
 - [ ] `?rotm` - apply modified plane rotation

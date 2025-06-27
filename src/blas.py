@@ -324,3 +324,33 @@ class BLAS:
     self.queue.finish()
 
     return float(final_result)
+
+  def isamax(self, x, n=None, incx=1):
+    if n is None:
+      n = len(x)
+    if n == 0:
+      return -1
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
+    program = self._load_kernel("isamax")
+    local_size = min(256, n)
+    global_size = ((n + local_size - 1) // local_size) * local_size
+    kernel = program.isamax
+    kernel(
+      self.queue,
+      (global_size,),
+      (local_size,),
+      np.int32(n),
+      x_buf,
+      np.int32(incx),
+      result_buf,
+      cl.LocalMemory(local_size * 4),
+      cl.LocalMemory(local_size * 4),
+    )
+    result = np.zeros(1, dtype=np.int32)
+    cl.enqueue_copy(self.queue, result, result_buf)
+    self.queue.finish()
+    return result[0]
