@@ -19,9 +19,7 @@ class BLAS:
 
   def _load_kernel(self, kernel_name):
     if kernel_name not in self.programs:
-      kernel_path = os.path.join(
-        "src", "opencl_kernels", "blas", "L1", f"{kernel_name}.cl"
-      )
+      kernel_path = os.path.join("src", "blas", "L1", f"{kernel_name}.cl")
       with open(kernel_path, "r") as f:
         kernel_source = f.read()
       self.programs[kernel_name] = cl.Program(self.context, kernel_source).build()

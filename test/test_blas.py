@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
-from opencl_kernels.blas import BLAS # type: ignore
+from blas import BLAS # type: ignore
 
 class TestBLAS(unittest.TestCase):
   def setUp(self):
-    import opencl_kernels.device as device # type: ignore
+    import device as device # type: ignore
     self.blas = BLAS(context=device.create_gpu_context())
 
   def test_scopy_basic(self):
