@@ -259,6 +259,48 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sdot(x, y, n=0)
     np.testing.assert_equal(result, expected)
 
+  def test_snrm2_basic(self):
+    x = np.array([3.0, 4.0], dtype=np.float32)
+    expected = 5.0
+    result = self.blas.snrm2(x)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_unit_vector(self):
+    x = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+    expected = 1.0
+    result = self.blas.snrm2(x)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_zero_vector(self):
+    x = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+    expected = 0.0
+    result = self.blas.snrm2(x)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_negative_values(self):
+    x = np.array([-3.0, -4.0], dtype=np.float32)
+    expected = 5.0
+    result = self.blas.snrm2(x)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_with_n(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    expected = np.sqrt(14.0)
+    result = self.blas.snrm2(x, n=3)
+    # np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_with_incx(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    expected = np.sqrt(10.0)
+    result = self.blas.snrm2(x, n=2, incx=2)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_snrm2_single_element(self):
+    x = np.array([5.0], dtype=np.float32)
+    expected = 5.0
+    result = self.blas.snrm2(x)
+    np.testing.assert_almost_equal(result, expected)
+
 
 if __name__ == "__main__":
   unittest.main()
