@@ -120,6 +120,48 @@ class TestBLAS(unittest.TestCase):
   #   np.testing.assert_array_equal(result_x, np.array([], dtype=np.float32))
   #   np.testing.assert_array_equal(result_y, np.array([], dtype=np.float32))
 
+  def test_sscal_basic(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    alpha = 2.5
+    expected = np.array([2.5, 5.0, 7.5, 10.0, 12.5], dtype=np.float32)
+    result = self.blas.sscal(alpha, x)
+    np.testing.assert_array_almost_equal(result, expected)
+
+  def test_sscal_zero_alpha(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    alpha = 0.0
+    expected = np.array([0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+    result = self.blas.sscal(alpha, x)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_sscal_negative_alpha(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    alpha = -2.0
+    expected = np.array([-2.0, -4.0, -6.0], dtype=np.float32)
+    result = self.blas.sscal(alpha, x)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_sscal_with_n(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    alpha = 3.0
+    expected = np.array([3.0, 6.0, 9.0, 4.0, 5.0], dtype=np.float32)
+    result = self.blas.sscal(alpha, x, n=3)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_sscal_with_incx(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dtype=np.float32)
+    alpha = 2.0
+    expected = np.array([2.0, 2.0, 6.0, 4.0, 10.0, 6.0], dtype=np.float32)
+    result = self.blas.sscal(alpha, x, n=3, incx=2)
+    np.testing.assert_array_equal(result, expected)
+
+  def test_sscal_single_element(self):
+    x = np.array([5.0], dtype=np.float32)
+    alpha = 3.0
+    expected = np.array([15.0], dtype=np.float32)
+    result = self.blas.sscal(alpha, x)
+    np.testing.assert_array_equal(result, expected)
+
 
 if __name__ == "__main__":
   unittest.main()

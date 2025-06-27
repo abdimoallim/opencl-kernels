@@ -93,3 +93,33 @@ class BLAS:
     self.queue.finish()
 
     return x, y
+
+  def sscal(self, alpha, x, n=None, incx=1):
+    if n is None:
+      n = len(x)
+
+    x = np.ascontiguousarray(x, dtype=np.float32)
+
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+
+    program = self._load_kernel("sscal")
+    kernel = program.sscal
+
+    global_size = (n,)
+
+    kernel(
+      self.queue,
+      global_size,
+      None,
+      np.int32(n),
+      np.float32(alpha),
+      x_buf,
+      np.int32(incx),
+    )
+
+    cl.enqueue_copy(self.queue, x, x_buf)
+    self.queue.finish()
+
+    return x
