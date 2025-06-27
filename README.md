@@ -14,7 +14,7 @@ OpenCL implementation of various kernels—BLAS specification & LAPACK routines.
 - [ ] `?nrm2` - Euclidean norm ([`snrm2`](/src/blas/L1/snrm2.cl))
 - [ ] `?asum` - sum of absolute values ([`sasum`](/src/blas/L1/sasum.cl))
 - [ ] `i?amax` - index of maximum absolute value element ([`isamax`](/src/blas/L1/isamax.cl))
-- [ ] `?rot` - apply plane rotation
+- [ ] `?rot` - apply plane rotation ([`srot`](/src/blas/L1/srot.cl))
 - [ ] `?rotg` - generate plane rotation
 - [ ] `?rotm` - apply modified plane rotation
 - [ ] `?rotmg` - generate modified plane rotation

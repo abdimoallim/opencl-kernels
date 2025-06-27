@@ -325,5 +325,17 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.isamax(x, n=2)
     self.assertEqual(result, expected)
 
+  def test_srot_basic(self):
+    x = np.array([1.0, 2.0], dtype=np.float32)
+    y = np.array([3.0, 4.0], dtype=np.float32)
+    theta = np.pi/3  # 60 degs
+    c = np.cos(theta)
+    s = np.sin(theta)
+    expected_x = np.array([1.0*c + 3.0*s, 2.0*c + 4.0*s], dtype=np.float32)
+    expected_y = np.array([3.0*c - 1.0*s, 4.0*c - 2.0*s], dtype=np.float32)
+    result_x, result_y = self.blas.srot(x, y, c, s)
+    np.testing.assert_array_almost_equal(result_x, expected_x, decimal=5)
+    np.testing.assert_array_almost_equal(result_y, expected_y, decimal=5)
+
 if __name__ == "__main__":
   unittest.main()

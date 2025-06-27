@@ -354,3 +354,36 @@ class BLAS:
     cl.enqueue_copy(self.queue, result, result_buf)
     self.queue.finish()
     return result[0]
+
+  def srot(self, x, y, c, s, n=None, incx=1, incy=1):
+    if n is None:
+      n = len(x)
+    if n == 0:
+      return x, y
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    y = np.ascontiguousarray(y, dtype=np.float32)
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+    program = self._load_kernel("srot")
+    kernel = program.srot
+    global_size = (n,)
+    kernel(
+      self.queue,
+      global_size,
+      None,
+      np.int32(n),
+      x_buf,
+      np.int32(incx),
+      y_buf,
+      np.int32(incy),
+      np.float32(c),
+      np.float32(s),
+    )
+    cl.enqueue_copy(self.queue, x, x_buf)
+    cl.enqueue_copy(self.queue, y, y_buf)
+    self.queue.finish()
+    return x, y
