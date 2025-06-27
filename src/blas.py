@@ -387,3 +387,119 @@ class BLAS:
     cl.enqueue_copy(self.queue, y, y_buf)
     self.queue.finish()
     return x, y
+
+  def srotg(self, a, b):
+    a = np.float32(a)
+    b = np.float32(b)
+    a_buf = cl.Buffer(
+      self.context,
+      cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR,
+      hostbuf=np.array([a]),
+    )
+    b_buf = cl.Buffer(
+      self.context,
+      cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR,
+      hostbuf=np.array([b]),
+    )
+    c_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
+    s_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
+
+    program = self._load_kernel("srotg")
+    program.srotg(self.queue, (1,), None, a_buf, b_buf, c_buf, s_buf)
+
+    new_a = np.zeros(1, dtype=np.float32)
+    new_b = np.zeros(1, dtype=np.float32)
+    c = np.zeros(1, dtype=np.float32)
+    s = np.zeros(1, dtype=np.float32)
+
+    cl.enqueue_copy(self.queue, new_a, a_buf)
+    cl.enqueue_copy(self.queue, new_b, b_buf)
+    cl.enqueue_copy(self.queue, c, c_buf)
+    cl.enqueue_copy(self.queue, s, s_buf)
+
+    self.queue.finish()
+
+    return (new_a[0], new_b[0], c[0], s[0])
+
+  def srotm(self, x, y, param, n=None, incx=1, incy=1):
+    if n is None:
+      n = len(x)
+
+    if n == 0:
+      return x, y
+
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    y = np.ascontiguousarray(y, dtype=np.float32)
+    param = np.ascontiguousarray(param, dtype=np.float32)
+
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+    param_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=param
+    )
+
+    program = self._load_kernel("srotm")
+    program.srotm(
+      self.queue,
+      (n,),
+      None,
+      np.int32(n),
+      x_buf,
+      np.int32(incx),
+      y_buf,
+      np.int32(incy),
+      param_buf,
+    )
+
+    cl.enqueue_copy(self.queue, x, x_buf)
+    cl.enqueue_copy(self.queue, y, y_buf)
+
+    self.queue.finish()
+
+    return x, y
+
+  def srotmg(self, d1, d2, x1, y1):
+    d1 = np.float32(d1)
+    d2 = np.float32(d2)
+    x1 = np.float32(x1)
+    y1 = np.float32(y1)
+
+    d1_buf = cl.Buffer(
+      self.context,
+      cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR,
+      hostbuf=np.array([d1]),
+    )
+    d2_buf = cl.Buffer(
+      self.context,
+      cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR,
+      hostbuf=np.array([d2]),
+    )
+    x1_buf = cl.Buffer(
+      self.context,
+      cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR,
+      hostbuf=np.array([x1]),
+    )
+    param_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=5 * 4)
+
+    program = self._load_kernel("srotmg")
+    program.srotmg(
+      self.queue, (1,), None, d1_buf, d2_buf, x1_buf, np.float32(y1), param_buf
+    )
+
+    new_d1 = np.zeros(1, dtype=np.float32)
+    new_d2 = np.zeros(1, dtype=np.float32)
+    new_x1 = np.zeros(1, dtype=np.float32)
+    param = np.zeros(5, dtype=np.float32)
+
+    cl.enqueue_copy(self.queue, new_d1, d1_buf)
+    cl.enqueue_copy(self.queue, new_d2, d2_buf)
+    cl.enqueue_copy(self.queue, new_x1, x1_buf)
+    cl.enqueue_copy(self.queue, param, param_buf)
+
+    self.queue.finish()
+
+    return (new_d1[0], new_d2[0], new_x1[0], param)

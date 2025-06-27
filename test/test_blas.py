@@ -1,10 +1,12 @@
 import unittest
 import numpy as np
-from blas import BLAS # type: ignore
+from blas import BLAS  # type: ignore
+
 
 class TestBLAS(unittest.TestCase):
   def setUp(self):
-    import device as device # type: ignore
+    import device as device  # type: ignore
+
     self.blas = BLAS(context=device.create_gpu_context())
 
   def test_scopy_basic(self):
@@ -328,14 +330,91 @@ class TestBLAS(unittest.TestCase):
   def test_srot_basic(self):
     x = np.array([1.0, 2.0], dtype=np.float32)
     y = np.array([3.0, 4.0], dtype=np.float32)
-    theta = np.pi/3  # 60 degs
+    theta = np.pi / 3  # 60 degs
     c = np.cos(theta)
     s = np.sin(theta)
-    expected_x = np.array([1.0*c + 3.0*s, 2.0*c + 4.0*s], dtype=np.float32)
-    expected_y = np.array([3.0*c - 1.0*s, 4.0*c - 2.0*s], dtype=np.float32)
+    expected_x = np.array([1.0 * c + 3.0 * s, 2.0 * c + 4.0 * s], dtype=np.float32)
+    expected_y = np.array([3.0 * c - 1.0 * s, 4.0 * c - 2.0 * s], dtype=np.float32)
     result_x, result_y = self.blas.srot(x, y, c, s)
     np.testing.assert_array_almost_equal(result_x, expected_x, decimal=5)
     np.testing.assert_array_almost_equal(result_y, expected_y, decimal=5)
+
+  def test_srotg_basic(self):
+    a = 3.0
+    b = 4.0
+    r, z, c, s = self.blas.srotg(a, b)
+    expected_r = 5.0  # sqrt(3² + 4²)
+    expected_c = 0.6  # 3/5
+    expected_s = 0.8  # 4/5
+    self.assertAlmostEqual(r, expected_r, places=5)
+    self.assertAlmostEqual(c, expected_c, places=5)
+    self.assertAlmostEqual(s, expected_s, places=5)
+
+  def test_srotm_basic(self):
+    x = np.array([1.0, 2.0], dtype=np.float32)
+    y = np.array([3.0, 4.0], dtype=np.float32)
+    param = np.array([-1.0, 1.0, 0.5, -0.5, 2.0], dtype=np.float32)
+    # x' = 1.0*1 + (-0.5)*3 = -0.5
+    #     1.0*2 + (-0.5)*4 = 0.0
+    # y' = 0.5*1 + 2.0*3 = 6.5
+    #     0.5*2 + 2.0*4 = 9.0
+    expected_x = np.array([-0.5, 0.0], dtype=np.float32)
+    expected_y = np.array([6.5, 9.0], dtype=np.float32)
+    result_x, result_y = self.blas.srotm(x, y, param)
+    np.testing.assert_array_almost_equal(result_x, expected_x, decimal=5)
+    np.testing.assert_array_almost_equal(result_y, expected_y, decimal=5)
+
+  def test_srotm_flag_one(self):
+    x = np.array([1.0, 2.0], dtype=np.float32)
+    y = np.array([3.0, 4.0], dtype=np.float32)
+    param = np.array([1.0, 2.0, 0.0, 0.0, 0.5], dtype=np.float32)
+    # x' = 2.0*1 + 1*3 = 5.0
+    #     2.0*2 + 1*4 = 8.0
+    # y' = -1*1 + 0.5*3 = 0.5
+    #     -1*2 + 0.5*4 = 0.0
+    expected_x = np.array([5.0, 8.0], dtype=np.float32)
+    expected_y = np.array([0.5, 0.0], dtype=np.float32)
+    result_x, result_y = self.blas.srotm(x, y, param)
+    np.testing.assert_array_almost_equal(result_x, expected_x, decimal=5)
+    np.testing.assert_array_almost_equal(result_y, expected_y, decimal=5)
+
+  def test_srotmg_basic(self):
+    d1 = 1.0
+    d2 = 2.0
+    x1 = 3.0
+    y1 = 4.0
+    result_d1, result_d2, result_x1, param = self.blas.srotmg(d1, d2, x1, y1)
+    self.assertEqual(param[0], -1.0)
+    expected_d1 = 5.48
+    expected_d2 = 3.52
+    expected_x1 = 5.0
+    self.assertAlmostEqual(result_d1, expected_d1, places=5)
+    self.assertAlmostEqual(result_d2, expected_d2, places=5)
+    self.assertAlmostEqual(result_x1, expected_x1, places=5)
+
+  def test_srotmg_negative_d1(self):
+    d1 = -1.0
+    d2 = 2.0
+    x1 = 3.0
+    y1 = 4.0
+    expected_d1 = 0.0
+    expected_d2 = 0.0
+    expected_x1 = 0.0
+    result_d1, result_d2, result_x1, param = self.blas.srotmg(d1, d2, x1, y1)
+    self.assertEqual(result_d1, expected_d1)
+    self.assertEqual(result_d2, expected_d2)
+    self.assertEqual(result_x1, expected_x1)
+    self.assertEqual(param[0], -1.0)
+
+  def test_srotmg_small_y1(self):
+    d1 = 1.0
+    d2 = 1.0
+    x1 = 4.0
+    y1 = 0.001
+    result_d1, result_d2, result_x1, param = self.blas.srotmg(d1, d2, x1, y1)
+    self.assertEqual(param[0], 0.0)
+    self.assertAlmostEqual(result_x1, x1, places=5)
+
 
 if __name__ == "__main__":
   unittest.main()
