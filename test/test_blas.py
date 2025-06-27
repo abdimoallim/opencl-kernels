@@ -210,6 +210,55 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.saxpy(alpha, x, y, n=2, incy=2)
     np.testing.assert_array_equal(result, expected)
 
+  def test_sdot_basic(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    y = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    expected = 32.0
+    result = self.blas.sdot(x, y)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_sdot_orthogonal(self):
+    x = np.array([1.0, 0.0], dtype=np.float32)
+    y = np.array([0.0, 1.0], dtype=np.float32)
+    expected = 0.0
+    result = self.blas.sdot(x, y)
+    np.testing.assert_equal(result, expected)
+
+  def test_sdot_identical(self):
+    x = np.array([3.0, 4.0], dtype=np.float32)
+    y = np.array([3.0, 4.0], dtype=np.float32)
+    expected = 25.0
+    result = self.blas.sdot(x, y)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_sdot_with_n(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    y = np.array([5.0, 6.0, 7.0, 8.0], dtype=np.float32)
+    expected = 38.0
+    result = self.blas.sdot(x, y, n=3)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_sdot_with_incx(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    y = np.array([5.0, 6.0], dtype=np.float32)
+    expected = 23.0
+    result = self.blas.sdot(x, y, n=2, incx=2)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_sdot_single_element(self):
+    x = np.array([3.0], dtype=np.float32)
+    y = np.array([4.0], dtype=np.float32)
+    expected = 12.0
+    result = self.blas.sdot(x, y)
+    np.testing.assert_almost_equal(result, expected)
+
+  def test_sdot_empty(self):
+    x = np.array([], dtype=np.float32)
+    y = np.array([], dtype=np.float32)
+    expected = 0.0
+    result = self.blas.sdot(x, y, n=0)
+    np.testing.assert_equal(result, expected)
+
 
 if __name__ == "__main__":
   unittest.main()
