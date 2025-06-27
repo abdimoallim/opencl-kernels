@@ -21,5 +21,5 @@ def create_gpu_context():
   try:
     context = cl.Context(dev_type=cl.device_type.GPU)
     return context
-  except:
+  except:  # noqa: E722
     return cl.Context(dev_type=cl.device_type.CPU)
