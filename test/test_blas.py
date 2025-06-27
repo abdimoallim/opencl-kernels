@@ -55,6 +55,71 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.scopy(x, y)
     np.testing.assert_array_equal(result, np.array([42.0], dtype=np.float32))
 
+  def test_sswap_basic(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    y = np.array([6.0, 7.0, 8.0, 9.0, 10.0], dtype=np.float32)
+    x_expected = np.array([6.0, 7.0, 8.0, 9.0, 10.0], dtype=np.float32)
+    y_expected = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    print("====")
+    print(x, x_expected, y, y_expected)
+    result_x, result_y = self.blas.sswap(x, y)
+    print(result_x, result_y)
+    print("====")
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  def test_sswap_with_n(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=np.float32)
+    y = np.array([6.0, 7.0, 8.0, 9.0, 10.0], dtype=np.float32)
+    x_expected = np.array([6.0, 7.0, 8.0, 4.0, 5.0], dtype=np.float32)
+    y_expected = np.array([1.0, 2.0, 3.0, 9.0, 10.0], dtype=np.float32)
+    result_x, result_y = self.blas.sswap(x, y, n=3)
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  def test_sswap_with_incx(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dtype=np.float32)
+    y = np.array([7.0, 8.0, 9.0], dtype=np.float32)
+    x_expected = np.array([7.0, 2.0, 8.0, 4.0, 9.0, 6.0], dtype=np.float32)
+    y_expected = np.array([1.0, 3.0, 5.0], dtype=np.float32)
+    result_x, result_y = self.blas.sswap(x, y, n=3, incx=2)
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  def test_sswap_with_incy(self):
+    x = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    y = np.array([4.0, 5.0, 6.0, 7.0, 8.0, 9.0], dtype=np.float32)
+    x_expected = np.array([4.0, 6.0, 8.0], dtype=np.float32)
+    y_expected = np.array([1.0, 5.0, 2.0, 7.0, 3.0, 9.0], dtype=np.float32)
+    result_x, result_y = self.blas.sswap(x, y, n=3, incy=2)
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  def test_sswap_with_both_strides(self):
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dtype=np.float32)
+    y = np.array([7.0, 8.0, 9.0, 10.0], dtype=np.float32)
+    x_expected = np.array([7.0, 2.0, 3.0, 9.0, 5.0, 6.0], dtype=np.float32)
+    y_expected = np.array([1.0, 8.0, 4.0, 10.0], dtype=np.float32)
+    result_x, result_y = self.blas.sswap(x, y, n=2, incx=3, incy=2)
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  def test_sswap_single_element(self):
+    x = np.array([1.0], dtype=np.float32)
+    y = np.array([2.0], dtype=np.float32)
+    x_expected = np.array([2.0], dtype=np.float32)
+    y_expected = np.array([1.0], dtype=np.float32)
+    result_x, result_y = self.blas.sswap(x, y)
+    np.testing.assert_array_equal(result_x, x_expected)
+    np.testing.assert_array_equal(result_y, y_expected)
+
+  # def test_sswap_empty(self):
+  #   x = np.array([], dtype=np.float32)
+  #   y = np.array([], dtype=np.float32)
+  #   result_x, result_y = self.blas.sswap(x, y, n=0)
+  #   np.testing.assert_array_equal(result_x, np.array([], dtype=np.float32))
+  #   np.testing.assert_array_equal(result_y, np.array([], dtype=np.float32))
+
 
 if __name__ == "__main__":
   unittest.main()

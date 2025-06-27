@@ -57,3 +57,39 @@ class BLAS:
     self.queue.finish()
 
     return y
+
+  def sswap(self, x, y, n=None, incx=1, incy=1):
+    if n is None:
+      n = len(x)
+
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    y = np.ascontiguousarray(y, dtype=np.float32)
+
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+
+    program = self._load_kernel("sswap")
+    kernel = program.sswap
+
+    global_size = (n,)
+
+    kernel(
+      self.queue,
+      global_size,
+      None,
+      np.int32(n),
+      x_buf,
+      np.int32(incx),
+      y_buf,
+      np.int32(incy),
+    )
+
+    cl.enqueue_copy(self.queue, x, x_buf)
+    cl.enqueue_copy(self.queue, y, y_buf)
+    self.queue.finish()
+
+    return x, y

@@ -1,4 +1,4 @@
-__kernel void scopy(const int n, __global const float *x, const int incx,
+__kernel void sswap(const int n, __global float *x, const int incx,
                     __global float *y, const int incy) {
   int gid = get_global_id(0);
 
@@ -8,5 +8,8 @@ __kernel void scopy(const int n, __global const float *x, const int incx,
   int x_idx = gid * incx;
   int y_idx = gid * incy;
 
-  y[y_idx] = x[x_idx];
+  float temp = x[x_idx];
+
+  x[x_idx] = y[y_idx];
+  y[y_idx] = temp;
 }
