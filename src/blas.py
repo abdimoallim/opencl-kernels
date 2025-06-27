@@ -1,6 +1,6 @@
-import os
 import numpy as np
 import pyopencl as cl  # type: ignore
+from kernels import *  # noqa: F403
 
 
 class BLAS:
@@ -15,16 +15,6 @@ class BLAS:
     else:
       self.queue = queue
 
-    self.programs = {}
-
-  def _load_kernel(self, kernel_name):
-    if kernel_name not in self.programs:
-      kernel_path = os.path.join("src", "blas", "L1", f"{kernel_name}.cl")
-      with open(kernel_path, "r") as f:
-        kernel_source = f.read()
-      self.programs[kernel_name] = cl.Program(self.context, kernel_source).build()
-    return self.programs[kernel_name]
-
   def scopy(self, x, y, n=None, incx=1, incy=1):
     if n is None:
       n = len(x)
@@ -37,7 +27,7 @@ class BLAS:
     )
     y_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, y.nbytes)
 
-    program = self._load_kernel("scopy")
+    program = cl.Program(self.context, scopy_kernel()).build()  # noqa: F405
     kernel = program.scopy
 
     global_size = (n,)
@@ -72,7 +62,7 @@ class BLAS:
       self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
     )
 
-    program = self._load_kernel("sswap")
+    program = cl.Program(self.context, sswap_kernel()).build()  # noqa: F405
     kernel = program.sswap
 
     global_size = (n,)
@@ -104,7 +94,7 @@ class BLAS:
       self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
     )
 
-    program = self._load_kernel("sscal")
+    program = cl.Program(self.context, sscal_kernel()).build()  # noqa: F405
     kernel = program.sscal
 
     global_size = (n,)
@@ -138,7 +128,7 @@ class BLAS:
       self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
     )
 
-    program = self._load_kernel("saxpy")
+    program = cl.Program(self.context, saxpy_kernel()).build()  # noqa: F405
     kernel = program.saxpy
 
     global_size = (n,)
@@ -188,7 +178,7 @@ class BLAS:
     zero = np.zeros(global_size, dtype=np.float32)
     cl.enqueue_copy(self.queue, partial_sums_buf, zero)
 
-    program = self._load_kernel("sdot")
+    program = cl.Program(self.context, sdot_kernel()).build()  # noqa: F405
 
     # first pass: compute partial sums
     kernel_sdot = program.sdot
@@ -242,7 +232,7 @@ class BLAS:
     zero = np.array([0.0], dtype=np.float32)
     cl.enqueue_copy(self.queue, result_buf, zero)
 
-    program = self._load_kernel("snrm2")
+    program = cl.Program(self.context, snrm2_kernel()).build()  # noqa: F405
     kernel = program.snrm2
 
     local_size = min(256, n)
@@ -288,7 +278,7 @@ class BLAS:
     zero = np.zeros(global_size, dtype=np.float32)
     cl.enqueue_copy(self.queue, partial_sums_buf, zero)
 
-    program = self._load_kernel("sasum")
+    program = cl.Program(self.context, sasum_kernel()).build()  # noqa: F405
 
     kernel_partial = program.sasum_partial
     kernel_partial(
@@ -335,7 +325,7 @@ class BLAS:
       self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
     )
     result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
-    program = self._load_kernel("isamax")
+    program = cl.Program(self.context, isamax_kernel()).build()  # noqa: F405
     local_size = min(256, n)
     global_size = ((n + local_size - 1) // local_size) * local_size
     kernel = program.isamax
@@ -368,7 +358,7 @@ class BLAS:
     y_buf = cl.Buffer(
       self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
     )
-    program = self._load_kernel("srot")
+    program = cl.Program(self.context, srot_kernel()).build()  # noqa: F405
     kernel = program.srot
     global_size = (n,)
     kernel(
@@ -404,7 +394,7 @@ class BLAS:
     c_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
     s_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
 
-    program = self._load_kernel("srotg")
+    program = cl.Program(self.context, srotg_kernel()).build()  # noqa: F405
     program.srotg(self.queue, (1,), None, a_buf, b_buf, c_buf, s_buf)
 
     new_a = np.zeros(1, dtype=np.float32)
@@ -442,7 +432,7 @@ class BLAS:
       self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=param
     )
 
-    program = self._load_kernel("srotm")
+    program = cl.Program(self.context, srotm_kernel()).build()  # noqa: F405
     program.srotm(
       self.queue,
       (n,),
@@ -485,7 +475,7 @@ class BLAS:
     )
     param_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=5 * 4)
 
-    program = self._load_kernel("srotmg")
+    program = cl.Program(self.context, srotmg_kernel()).build()  # noqa: F405
     program.srotmg(
       self.queue, (1,), None, d1_buf, d2_buf, x1_buf, np.float32(y1), param_buf
     )
