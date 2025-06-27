@@ -431,5 +431,13 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.sger(1.0, x, y, A)
     np.testing.assert_array_almost_equal(result, expected)
 
+  def test_ssymv_basic(self):
+    A = np.array([[1,2],[2,3]], dtype=np.float32)
+    x = np.array([1,1], dtype=np.float32)
+    y = np.array([1,1], dtype=np.float32)
+    expected = np.array([4,6], dtype=np.float32)
+    result = self.blas.ssymv(1.0, A, x, y)
+    np.testing.assert_array_almost_equal(result, expected)
+
 if __name__ == "__main__":
   unittest.main()

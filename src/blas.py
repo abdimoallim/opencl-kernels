@@ -573,3 +573,39 @@ class BLAS:
     self.queue.finish()
 
     return A
+
+  def ssymv(self, alpha, A, x, y, uplo="U", n=None, lda=None, incx=1, incy=1, beta=1.0):
+    n = A.shape[0] if n is None else n
+    lda = n if lda is None else lda
+
+    A_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
+    )
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+    y_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
+    )
+
+    program = cl.Program(self.context, ssymv_kernel()).build()  # noqa: F405
+    program.ssymv(
+      self.queue,
+      (n,),
+      None,
+      np.int32(n),
+      np.float32(alpha),
+      A_buf,
+      np.int32(lda),
+      x_buf,
+      np.int32(incx),
+      np.float32(beta),
+      y_buf,
+      np.int32(incy),
+    )
+
+    cl.enqueue_copy(self.queue, y, y_buf)
+
+    self.queue.finish()
+
+    return y

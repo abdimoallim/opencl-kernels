@@ -30,7 +30,7 @@ OpenCL implementation of various kernels—BLAS specification & LAPACK routines.
 - [ ] `?hbmv` - Hermitian band matrix-vector multiply (complex)
 - [ ] `?tbmv` - triangular band matrix-vector multiply
 - [ ] `?tbsv` - triangular band system solve
-- [ ] `?symv` - symmetric matrix-vector multiply
+- [ ] `?symv` - symmetric matrix-vector multiply ([`ssymv`](/src/blas/L2/ssymv.cl))
 - [ ] `?hemv` - Hermitian matrix-vector multiply (complex)
 - [ ] `?syr` - symmetric rank-1 update
 - [ ] `?her` - Hermitian rank-1 update (complex)
