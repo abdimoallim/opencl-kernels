@@ -33,9 +33,9 @@ __kernel void reduce_sum(__global const float *partial_sums,
   /* one work-item per group should write */
 
   if (lid == 0) {
-    // @todo: atomic_add_global can be replaced with a regular
-    // addition since there is only one work group, PoCL on
-    // IvyBridge does not support this
+    // @todo: atomic_add_global can be replaced with a
+    // regular addition since there is only one work group,
+    // check: cl_khr_global_int32_base_atomics
     // atomic_add_global(result, local_sum[0]);
     result[get_group_id(0)] = local_sums[0];
   }

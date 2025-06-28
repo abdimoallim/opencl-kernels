@@ -699,3 +699,43 @@ class BLAS:
     self.queue.finish()
 
     return y
+
+  def stbmv(self, A, x, k, uplo="U", trans="N", diag="N", n=None, lda=None, incx=1):
+    n = A.shape[1] if n is None else n
+    lda = k + 1 if lda is None else lda
+
+    is_upper = 1 if uplo == "U" else 0
+    is_trans = 1 if trans == "T" else 0
+    is_unit_diag = 1 if diag == "U" else 0
+
+    A = np.asfortranarray(A, dtype=np.float32)
+    x = np.ascontiguousarray(x, dtype=np.float32)
+
+    A_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
+    )
+    x_buf = cl.Buffer(
+      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
+    )
+
+    program = cl.Program(self.context, stbmv_kernel()).build()  # noqa: F405
+    program.stbmv(
+      self.queue,
+      (n,),
+      None,
+      np.int32(n),
+      np.int32(k),
+      np.int32(is_upper),
+      np.int32(is_trans),
+      np.int32(is_unit_diag),
+      A_buf,
+      np.int32(lda),
+      x_buf,
+      np.int32(incx),
+    )
+
+    cl.enqueue_copy(self.queue, x, x_buf)
+
+    self.queue.finish()
+
+    return x
