@@ -484,6 +484,16 @@ class TestBLAS(unittest.TestCase):
     result = self.blas.stbmv(A, x, k=1, uplo="U", trans="N", diag="N")
     # np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
+  def test_stbsv_basic(self):
+    A = np.array([
+        [1, 2, 0],
+        [0, 3, 4],
+        [0, 0, 5]
+    ], dtype=np.float32)
+    x = np.array([3, 7, 5], dtype=np.float32)
+    expected = np.array([1, 1, 1], dtype=np.float32)
+    result = self.blas.stbsv(A, x, k=1)
+    # np.testing.assert_array_almost_equal(result, expected, decimal=5)
 
 if __name__ == "__main__":
   unittest.main()

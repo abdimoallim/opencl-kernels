@@ -4,6 +4,7 @@
 from .ssbmv import ssbmv_kernel
 from .ssymv import ssymv_kernel
 from .sgemv import sgemv_kernel
+from .stbsv import stbsv_kernel
 from .sgbmv import sgbmv_kernel
 from .sger import sger_kernel
 from .stbmv import stbmv_kernel
@@ -24,6 +25,7 @@ __all__ = [
     'ssbmv_kernel',
     'ssymv_kernel',
     'sgemv_kernel',
+    'stbsv_kernel',
     'sgbmv_kernel',
     'sger_kernel',
     'stbmv_kernel',
