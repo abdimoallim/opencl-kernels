@@ -14,6 +14,6 @@ build-backend = "setuptools.build_meta"
 dev = ["ruff>=0.11.0"]
 
 [tool.ruff]
-line-length = 88
+line-length = 200
 indent-width = 2
-extend-exclude = ["test"]
+# extend-exclude = ["test"]

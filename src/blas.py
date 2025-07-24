@@ -22,9 +22,7 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
     y_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, y.nbytes)
 
     program = cl.Program(self.context, scopy_kernel()).build()  # noqa: F405
@@ -55,12 +53,8 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, sswap_kernel()).build()  # noqa: F405
     kernel = program.sswap
@@ -90,9 +84,7 @@ class BLAS:
 
     x = np.ascontiguousarray(x, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
 
     program = cl.Program(self.context, sscal_kernel()).build()  # noqa: F405
     kernel = program.sscal
@@ -121,12 +113,8 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, saxpy_kernel()).build()  # noqa: F405
     kernel = program.saxpy
@@ -160,19 +148,13 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     max_wg_size = 256
     global_size = min(1024, ((n + 63) // 64) * 64)
 
-    partial_sums_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE, size=global_size * 4
-    )
+    partial_sums_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE, size=global_size * 4)
     result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=4)
 
     zero = np.zeros(global_size, dtype=np.float32)
@@ -224,9 +206,7 @@ class BLAS:
 
     x = np.ascontiguousarray(x, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
     result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
 
     zero = np.array([0.0], dtype=np.float32)
@@ -263,16 +243,12 @@ class BLAS:
       return 0.0
 
     x = np.ascontiguousarray(x, dtype=np.float32)
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
 
     max_wg_size = 256
     global_size = min(1024, ((n + 63) // 64) * 64)
 
-    partial_sums_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE, size=global_size * 4
-    )
+    partial_sums_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE, size=global_size * 4)
     result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=4)
 
     zero = np.zeros(global_size, dtype=np.float32)
@@ -321,9 +297,7 @@ class BLAS:
     if n == 0:
       return -1
     x = np.ascontiguousarray(x, dtype=np.float32)
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
     result_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, 4)
     program = cl.Program(self.context, isamax_kernel()).build()  # noqa: F405
     local_size = min(256, n)
@@ -352,12 +326,8 @@ class BLAS:
       return x, y
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
     program = cl.Program(self.context, srot_kernel()).build()  # noqa: F405
     kernel = program.srot
     global_size = (n,)
@@ -422,15 +392,9 @@ class BLAS:
     y = np.ascontiguousarray(y, dtype=np.float32)
     param = np.ascontiguousarray(param, dtype=np.float32)
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
-    param_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=param
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
+    param_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=param)
 
     program = cl.Program(self.context, srotm_kernel()).build()  # noqa: F405
     program.srotm(
@@ -476,9 +440,7 @@ class BLAS:
     param_buf = cl.Buffer(self.context, cl.mem_flags.WRITE_ONLY, size=5 * 4)
 
     program = cl.Program(self.context, srotmg_kernel()).build()  # noqa: F405
-    program.srotmg(
-      self.queue, (1,), None, d1_buf, d2_buf, x1_buf, np.float32(y1), param_buf
-    )
+    program.srotmg(self.queue, (1,), None, d1_buf, d2_buf, x1_buf, np.float32(y1), param_buf)
 
     new_d1 = np.zeros(1, dtype=np.float32)
     new_d2 = np.zeros(1, dtype=np.float32)
@@ -504,15 +466,9 @@ class BLAS:
     x = np.ascontiguousarray(x.astype(np.float32))
     y = np.ascontiguousarray(y.astype(np.float32))
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, sgemv_kernel()).build()  # noqa: F405
     program.sgemv(
@@ -542,15 +498,9 @@ class BLAS:
     n = y.size if n is None else n
     lda = m if lda is None else lda
 
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
 
     program = cl.Program(self.context, sger_kernel()).build()  # noqa: F405
     program.sger(
@@ -578,15 +528,9 @@ class BLAS:
     n = A.shape[0] if n is None else n
     lda = n if lda is None else lda
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, ssymv_kernel()).build()  # noqa: F405
     program.ssymv(
@@ -610,9 +554,7 @@ class BLAS:
 
     return y
 
-  def sgbmv(
-    self, alpha, A, x, y, kl, ku, m=None, n=None, lda=None, incx=1, incy=1, beta=1.0
-  ):
+  def sgbmv(self, alpha, A, x, y, kl, ku, m=None, n=None, lda=None, incx=1, incy=1, beta=1.0):
     m = len(y) if m is None else m
     n = len(x) if n is None else n
     lda = kl + ku + 1 if lda is None else lda
@@ -621,15 +563,9 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, sgbmv_kernel()).build()  # noqa: F405
     program.sgbmv(
@@ -656,9 +592,7 @@ class BLAS:
 
     return y
 
-  def ssbmv(
-    self, alpha, A, x, y, k, uplo="U", n=None, lda=None, incx=1, incy=1, beta=1.0
-  ):
+  def ssbmv(self, alpha, A, x, y, k, uplo="U", n=None, lda=None, incx=1, incy=1, beta=1.0):
     n = len(x) if n is None else n
     lda = k + 1 if lda is None else lda
 
@@ -666,15 +600,9 @@ class BLAS:
     x = np.ascontiguousarray(x, dtype=np.float32)
     y = np.ascontiguousarray(y, dtype=np.float32)
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
-    y_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
+    y_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=y)
 
     program = cl.Program(self.context, ssbmv_kernel()).build()  # noqa: F405
     program.ssbmv(
@@ -713,12 +641,8 @@ class BLAS:
     A = np.asfortranarray(A, dtype=np.float32)
     x = np.ascontiguousarray(x, dtype=np.float32)
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
 
     program = cl.Program(self.context, stbmv_kernel()).build()  # noqa: F405
     program.stbmv(
@@ -750,12 +674,8 @@ class BLAS:
     A = np.asfortranarray(A, dtype=np.float32)
     x = np.ascontiguousarray(x, dtype=np.float32)
 
-    A_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A
-    )
-    x_buf = cl.Buffer(
-      self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x
-    )
+    A_buf = cl.Buffer(self.context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=A)
+    x_buf = cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=x)
 
     program = cl.Program(self.context, stbsv_kernel()).build()  # noqa: F405
     program.stbsv(
