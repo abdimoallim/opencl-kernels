@@ -3,6 +3,7 @@
 KERNEL_DIRS=(
   "src/blas"
   "src/activations"
+  "src/attention"
 )
 
 mkdir -p src/kernels
