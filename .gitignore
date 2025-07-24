@@ -1,5 +1,5 @@
 # oclk
-src/kernels/
+/src/kernels/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
