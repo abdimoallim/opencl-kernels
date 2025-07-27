@@ -1,4 +1,5 @@
 import device
+import struct
 import pyopencl as cl
 
 
@@ -31,6 +32,8 @@ class NDArray:
 
     if isinstance(data, cl.Buffer):
       self.data = data
+    else:
+      self.data = self._create_buffer_from_data(data)
 
   def _flatten_nested(self, data):
     result = []
@@ -72,3 +75,27 @@ class NDArray:
     for dim in self.shape:
       size *= dim
     return size
+
+  def _create_buffer_from_data(self, data):
+    if not isinstance(data, (list, tuple)):
+      data = [data]
+
+    dtype_map = {
+      "bool": ("?", 1),
+      "int8": ("b", 1),
+      "int16": ("h", 2),
+      "int32": ("i", 4),
+      "int64": ("q", 8),
+      "uint8": ("B", 1),
+      "uint16": ("H", 2),
+      "uint32": ("I", 4),
+      "uint64": ("Q", 8),
+      "float32": ("f", 4),
+      "float64": ("d", 8),
+    }
+
+    format_char, item_size = dtype_map.get(self.dtype, ("d", 8))
+
+    packed_data = struct.pack(f"{len(data)}{format_char}", *data)
+
+    return cl.Buffer(self.context, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=packed_data)
